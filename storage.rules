@@ -1,0 +1,30 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isDriver() {
+      return isAuthenticated() && request.auth.token.role == 'driver';
+    }
+
+    // Trip documents and photos
+    match /trips/{tripId}/{allPaths=**} {
+      // All authenticated users can read trip files
+      allow read: if isAuthenticated();
+
+      // Authenticated users can write (drivers write their own trip files)
+      allow write: if isAuthenticated()
+        && request.resource.size < 10 * 1024 * 1024  // 10MB max
+        && request.resource.contentType.matches('image/.*|application/pdf');
+    }
+
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

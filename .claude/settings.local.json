@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version && npm --version && git --version 2>/dev/null)",
+      "Bash(npm create:*)",
+      "Bash(npx create-vite@latest . --template vue --force 2>&1)",
+      "Bash(npx create-vite@latest temp-scaffold --template vue 2>&1 && cp -r temp-scaffold/. . && rm -rf temp-scaffold && ls -la)",
+      "Bash(ls /d/Pets/Logist-new/temp-scaffold/ && cp -r /d/Pets/Logist-new/temp-scaffold/. /d/Pets/Logist-new/ && rm -rf /d/Pets/Logist-new/temp-scaffold && ls /d/Pets/Logist-new/)",
+      "Bash(npm install:*)",
+      "Bash(./node_modules/.bin/tailwindcss init:*)",
+      "Bash(ls node_modules/.bin/ | grep -i tail && ./node_modules/.bin/tailwindcss --version)",
+      "Bash(npm run:*)",
+      "Bash(firebase setup:emulators:firestore 2>&1 && firebase setup:emulators:database 2>&1 && firebase setup:emulators:ui 2>&1)",
+      "Bash(firebase setup:emulators:functions 2>&1)",
+      "Bash(firebase deploy:*)",
+      "Bash(cd \"D:/Pets/Logist-new\" && sed -i \\\\\n  -e 's/<AppModal v-model=\"showCreateModal\" title=\"Додати водія\">/<AppModal v-model=\"showCreateModal\" title=\"Додати водія\" persistent>/g' \\\\\n  -e 's/<AppModal v-model=\"showEditModal\" :title=\"`Редагувати: \\\\${editingDriver?\\\\.name}`\">/<AppModal v-model=\"showEditModal\" :title=\"\\\\`Редагувати: \\\\${editingDriver?.name}\\\\`\" persistent>/g' \\\\\n  src/views/dispatcher/DispatcherDriversView.vue)"
+    ]
+  }
+}

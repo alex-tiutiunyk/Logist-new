@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    function isDriver() {
+      return hasRole('driver');
+    }
+
+    function isDispatcher() {
+      return hasRole('dispatcher');
+    }
+
+    function isLogist() {
+      return hasRole('logist');
+    }
+
+    function isStaff() {
+      return isDispatcher() || isLogist();
+    }
+
+    // Users collection
+    match /users/{uid} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.auth.uid == uid;
+      allow update: if isAuthenticated() && (
+        request.auth.uid == uid || isStaff()
+      );
+      allow delete: if isLogist();
+    }
+
+    // Trips collection
+    match /trips/{tripId} {
+      allow read: if isAuthenticated();
+      allow create: if isStaff();
+      allow update: if isAuthenticated() && (
+        isStaff() ||
+        // Driver can only update their own trip's status
+        (isDriver() && resource.data.driverUid == request.auth.uid)
+      );
+      allow delete: if isLogist();
+
+      // All trip subcollections (documents, containers, waypoints, statusLog)
+      match /{subcollection}/{docId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && (
+          isStaff() ||
+          (isDriver() && get(/databases/$(database)/documents/trips/$(tripId)).data.driverUid == request.auth.uid)
+        );
+        allow update: if isAuthenticated() && (
+          isStaff() ||
+          (isDriver() && get(/databases/$(database)/documents/trips/$(tripId)).data.driverUid == request.auth.uid)
+        );
+        allow delete: if isStaff();
+      }
+    }
+
+    // Routes collection
+    match /routes/{routeId} {
+      allow read: if isAuthenticated();
+      allow write: if isStaff();
+    }
+  }
+}
