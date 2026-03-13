@@ -23,6 +23,10 @@ function close() {
   emit('update:modelValue', false)
 }
 
+function forceClose() {
+  emit('update:modelValue', false)
+}
+
 watch(() => props.modelValue, (val) => {
   if (val) {
     document.body.style.overflow = 'hidden'
@@ -50,7 +54,7 @@ watch(() => props.modelValue, (val) => {
             <h2 class="text-lg font-semibold text-gray-900">{{ title }}</h2>
             <button
               class="text-muted hover:text-gray-900 transition-colors p-1 rounded-lg hover:bg-gray-100"
-              @click="close"
+              @click="forceClose"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

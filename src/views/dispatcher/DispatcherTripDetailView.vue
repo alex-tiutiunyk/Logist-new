@@ -46,6 +46,12 @@ let unsubscribe = null
 
 const isSos = computed(() => trip.value && EMERGENCY_STATUSES.includes(trip.value.currentStatus))
 
+const isExpired = computed(() => {
+  if (!trip.value?.eta) return false
+  const eta = trip.value.eta.toDate ? trip.value.eta.toDate() : new Date(trip.value.eta)
+  return eta < new Date()
+})
+
 onMounted(async () => {
   await tripsStore.fetchTrip(tripId.value)
   unsubscribe = tripsStore.subscribeToTrip(tripId.value)
@@ -176,7 +182,7 @@ function formatDate(ts) {
         <div class="flex items-center gap-2">
           <span v-if="trip.isInternational" class="text-xs text-purple-600 font-medium bg-purple-50 border border-purple-200 px-2 py-1 rounded-full">Міжнародний</span>
           <AppBadge :status="trip.currentStatus" />
-          <AppButton variant="ghost" size="sm" @click="openEdit">Редагувати</AppButton>
+          <AppButton variant="ghost" size="sm" :disabled="isExpired" :title="isExpired ? 'Рейс прострочено' : ''" @click="openEdit">Редагувати</AppButton>
           <AppButton variant="danger" size="sm" @click="showDeleteConfirm = true">Видалити</AppButton>
         </div>
       </div>
