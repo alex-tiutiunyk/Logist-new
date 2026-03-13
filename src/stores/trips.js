@@ -14,6 +14,7 @@ import {
   orderBy,
   serverTimestamp,
   arrayUnion,
+  Timestamp,
 } from 'firebase/firestore'
 import { db } from '@/firebase/firestore.js'
 
@@ -98,7 +99,7 @@ export const useTripsStore = defineStore('trips', () => {
       const tripRef = doc(db, 'trips', id)
       const logEntry = {
         status,
-        at: serverTimestamp(),
+        at: Timestamp.now(),
         location,
         comment,
       }
