@@ -49,12 +49,12 @@ const tripNumber = computed(() => tripsStore.currentTrip?.number || '—')
     </header>
 
     <!-- Main content -->
-    <main class="flex-1 mt-[56px] mb-[72px] overflow-y-auto">
+    <main class="flex-1 mt-[56px] mb-[72px] overflow-y-auto" style="margin-bottom: calc(72px + env(safe-area-inset-bottom))">
       <RouterView />
     </main>
 
     <!-- Bottom tab bar -->
-    <nav class="fixed bottom-0 left-0 right-0 z-30 bg-surface border-t border-border max-w-screen-xs mx-auto">
+    <nav class="fixed bottom-0 left-0 right-0 z-30 bg-surface border-t border-border max-w-screen-xs mx-auto" style="padding-bottom: env(safe-area-inset-bottom)">
       <div class="flex">
         <RouterLink
           v-for="tab in tabs"
