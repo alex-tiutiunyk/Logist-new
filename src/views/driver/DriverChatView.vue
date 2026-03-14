@@ -2,12 +2,22 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth.js'
 import { useTripsStore } from '@/stores/trips.js'
+import { useChatStore } from '@/stores/chat.js'
 import ChatWindow from '@/components/chat/ChatWindow.vue'
 
 const authStore = useAuthStore()
 const tripsStore = useTripsStore()
+const chatStore = useChatStore()
 
 const trip = computed(() => tripsStore.currentTrip)
+
+onMounted(() => {
+  if (trip.value) chatStore.setActiveChat(trip.value.id)
+})
+
+onUnmounted(() => {
+  chatStore.clearActiveChat()
+})
 </script>
 
 <template>

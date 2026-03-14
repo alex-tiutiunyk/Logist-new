@@ -35,8 +35,7 @@ onUnmounted(() => {
 })
 
 function getUnreadCount(tripId) {
-  const msgs = chatStore.messages[tripId] || []
-  return msgs.filter(m => m.role === 'driver' && !m.readByDispatcher).length
+  return chatStore.unreadCounts[tripId] || 0
 }
 </script>
 
@@ -59,7 +58,7 @@ function getUnreadCount(tripId) {
           :key="trip.id"
           class="w-full text-left px-4 py-3 border-b border-border last:border-0 transition-colors hover:bg-bg"
           :class="selectedTripId === trip.id ? 'bg-primary/5 border-l-2 border-l-primary' : ''"
-          @click="selectedTripId = trip.id"
+          @click="selectedTripId = trip.id; chatStore.setActiveChat(trip.id)"
         >
           <div class="flex items-center justify-between mb-1">
             <span class="text-sm font-semibold text-gray-900 font-mono">{{ trip.number }}</span>

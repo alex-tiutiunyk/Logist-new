@@ -160,10 +160,14 @@ function formatEta(eta) {
         <button
           v-for="status in availableStatuses"
           :key="status"
-          class="w-full text-left px-4 py-3 rounded-xl border border-border hover:bg-bg hover:border-primary/30 transition-all text-sm font-medium text-gray-800"
+          class="w-full text-left px-4 py-3 rounded-xl border transition-all text-sm font-medium flex items-center justify-between"
+          :class="status === trip.currentStatus
+            ? 'border-primary bg-primary/5 text-primary'
+            : 'border-border hover:bg-bg hover:border-primary/30 text-gray-800'"
           @click="selectStatus(status)"
         >
           {{ STATUS_LABELS[status] || status }}
+          <span v-if="status === trip.currentStatus" class="text-xs font-semibold text-primary">● активний</span>
         </button>
         <p v-if="availableStatuses.length === 0" class="text-sm text-muted text-center py-4">
           Немає доступних статусів

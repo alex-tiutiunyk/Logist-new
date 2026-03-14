@@ -15,7 +15,8 @@
       "Bash(firebase deploy:*)",
       "Bash(cd \"D:/Pets/Logist-new\" && sed -i \\\\\n  -e 's/<AppModal v-model=\"showCreateModal\" title=\"Додати водія\">/<AppModal v-model=\"showCreateModal\" title=\"Додати водія\" persistent>/g' \\\\\n  -e 's/<AppModal v-model=\"showEditModal\" :title=\"`Редагувати: \\\\${editingDriver?\\\\.name}`\">/<AppModal v-model=\"showEditModal\" :title=\"\\\\`Редагувати: \\\\${editingDriver?.name}\\\\`\" persistent>/g' \\\\\n  src/views/dispatcher/DispatcherDriversView.vue)",
       "Bash(cd \"D:/Pets/Logist-new\" && npx firebase deploy --only firestore:rules 2>&1)",
-      "Bash(cd \"D:/Pets/Logist-new\" && npx firebase deploy --only firestore:indexes 2>&1)"
+      "Bash(cd \"D:/Pets/Logist-new\" && npx firebase deploy --only firestore:indexes 2>&1)",
+      "Bash(cd \"D:/Pets/Logist-new\" && npx firebase deploy --only database 2>&1)"
     ]
   }
 }

@@ -16,6 +16,7 @@ const EVENT_ICONS = {
   driver_edited: '📝',
   driver_online: '🟢',
   driver_offline: '⚫',
+  chat_message: '💬',
 }
 
 const EVENT_COLORS = {
@@ -23,6 +24,7 @@ const EVENT_COLORS = {
   trip_deleted: 'border-orange-300 bg-orange-50',
   trip_created: 'border-green-200 bg-green-50',
   driver_created: 'border-blue-200 bg-blue-50',
+  chat_message: 'border-blue-200 bg-blue-50',
 }
 
 onMounted(() => {
