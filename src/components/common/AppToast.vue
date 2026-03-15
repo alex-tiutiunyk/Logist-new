@@ -26,7 +26,7 @@ const iconColorMap = {
 </script>
 
 <template>
-  <div class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 w-80 pointer-events-none">
+  <div class="fixed bottom-4 right-4 z-[1100] flex flex-col gap-2 w-80 pointer-events-none">
     <TransitionGroup name="toast" tag="div" class="flex flex-col gap-2">
       <div
         v-for="toast in notifStore.toasts"

@@ -82,11 +82,14 @@ function renderPolyline() {
     polylineLayer = null
   }
   if (props.polyline.length >= 2) {
-    polylineLayer = L.polyline(props.polyline, {
+    // Normalize {lat,lng} objects or [lat,lng] arrays
+    const latLngs = props.polyline.map(p => Array.isArray(p) ? p : [p.lat, p.lng])
+    polylineLayer = L.polyline(latLngs, {
       color: '#0f4c35',
       weight: 4,
       opacity: 0.7,
     }).addTo(map)
+    map.fitBounds(polylineLayer.getBounds(), { padding: [20, 20] })
   }
 }
 
@@ -100,5 +103,5 @@ watch(() => props.center, (newCenter) => {
 </script>
 
 <template>
-  <div ref="mapContainer" class="w-full h-full" style="min-height: 300px;" />
+  <div ref="mapContainer" class="w-full h-full" />
 </template>

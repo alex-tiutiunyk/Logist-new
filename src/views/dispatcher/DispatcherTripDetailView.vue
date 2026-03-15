@@ -13,6 +13,7 @@ import AppSpinner from '@/components/common/AppSpinner.vue'
 import StatusTimeline from '@/components/status/StatusTimeline.vue'
 import ChatWindow from '@/components/chat/ChatWindow.vue'
 import RouteEditor from '@/components/map/RouteEditor.vue'
+import LeafletMap from '@/components/map/LeafletMap.vue'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '@/firebase/firestore.js'
 
@@ -57,6 +58,8 @@ const isExpired = computed(() => {
 const currentDriver = computed(() =>
   trip.value?.driverUid ? drivers.value.find(d => d.id === trip.value.driverUid) || null : null
 )
+
+const routePolyline = computed(() => trip.value?.routeData?.polylinePoints || [])
 
 async function saveRoute(payload) {
   if (!trip.value) return
@@ -315,6 +318,11 @@ function formatDate(ts) {
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Route map -->
+      <div v-if="activeTab === 'info' && routePolyline.length" class="bg-surface border border-border rounded-xl overflow-hidden" style="height: 50vh">
+        <LeafletMap :polyline="routePolyline" />
       </div>
 
       <!-- Timeline tab -->
