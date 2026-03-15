@@ -64,10 +64,23 @@ service cloud.firestore {
       }
     }
 
-    // Routes collection
+    // Routes collection (saved route calculations by staff)
+    // Public read allowed so shared route links (/r/:id) work without login
     match /routes/{routeId} {
-      allow read: if isAuthenticated();
+      allow read: if true;
       allow write: if isStaff();
+    }
+
+    // Route Links collection (client calculator links)
+    // Public read allowed so client calculator links (/calc/:linkId) work without login
+    match /routeLinks/{linkId} {
+      allow read: if true;
+      allow write: if isStaff();
+
+      // Calculations subcollection: anyone can read/write (public link, no auth)
+      match /calculations/{calcId} {
+        allow read, write: if true;
+      }
     }
 
     // Events collection

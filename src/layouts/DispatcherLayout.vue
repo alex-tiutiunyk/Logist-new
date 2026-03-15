@@ -13,11 +13,12 @@ const tripsStore = useTripsStore()
 const router = useRouter()
 
 const navItems = [
-  { name: 'dispatcher-dashboard', label: 'Дашборд', icon: 'grid' },
-  { name: 'dispatcher-map',       label: 'Карта',   icon: 'map' },
-  { name: 'dispatcher-trips',     label: 'Рейси',   icon: 'truck' },
-  { name: 'dispatcher-drivers',   label: 'Водії',   icon: 'users' },
-  { name: 'dispatcher-chat',      label: 'Чати',    icon: 'chat' },
+  { name: 'dispatcher-dashboard', label: 'Дашборд',  icon: 'grid' },
+  { name: 'dispatcher-map',       label: 'Карта',    icon: 'map' },
+  { name: 'dispatcher-trips',     label: 'Рейси',    icon: 'truck' },
+  { name: 'dispatcher-drivers',   label: 'Водії',    icon: 'users' },
+  { name: 'dispatcher-chat',      label: 'Чати',     icon: 'chat' },
+  { name: 'dispatcher-routes',    label: 'Маршрути', icon: 'routes' },
 ]
 
 onMounted(async () => {
@@ -86,6 +87,9 @@ function goToEvents() {
                 class="absolute -top-1 -right-1 min-w-[16px] h-4 px-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none"
               >{{ chatStore.totalUnread > 9 ? '9+' : chatStore.totalUnread }}</span>
             </span>
+            <svg v-if="item.icon === 'routes'" class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
             <span class="hidden lg:inline">{{ item.label }}</span>
           </button>
         </RouterLink>
@@ -179,6 +183,9 @@ function goToEvents() {
               </svg>
               <span v-if="chatStore.totalUnread > 0" class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-red-500" />
             </span>
+            <svg v-if="item.icon === 'routes'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
             <span class="text-[10px] font-medium">{{ item.label }}</span>
           </button>
         </RouterLink>

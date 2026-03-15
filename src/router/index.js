@@ -90,6 +90,11 @@ const routes = [
         component: () => import('@/views/dispatcher/DispatcherChatView.vue'),
       },
       {
+        path: 'routes',
+        name: 'dispatcher-routes',
+        component: () => import('@/views/shared/RoutesView.vue'),
+      },
+      {
         path: 'events',
         name: 'dispatcher-events',
         component: () => import('@/views/dispatcher/DispatcherEventsView.vue'),
@@ -116,7 +121,7 @@ const routes = [
       {
         path: 'routes',
         name: 'logist-routes',
-        component: () => import('@/views/logist/LogistRoutesView.vue'),
+        component: () => import('@/views/shared/RoutesView.vue'),
       },
       {
         path: 'containers',
@@ -139,6 +144,20 @@ const routes = [
         component: () => import('@/views/logist/LogistEventsView.vue'),
       },
     ],
+  },
+
+  // Public routes (no auth required)
+  {
+    path: '/r/:id',
+    name: 'public-route',
+    component: () => import('@/views/public/PublicRouteView.vue'),
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/calc/:linkId',
+    name: 'public-calc',
+    component: () => import('@/views/public/PublicCalcView.vue'),
+    meta: { requiresAuth: false },
   },
 
   // Catch-all
