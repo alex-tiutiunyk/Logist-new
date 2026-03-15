@@ -6,6 +6,8 @@ A role-based web application for managing container transport logistics. Built f
 
 **Dispatcher**
 - Create and manage trips with driver assignment, route, ETA, and container details
+- Address autocomplete (HERE Maps) for origin and destination
+- Route editing with truck dimensions — auto-filled from assigned driver's profile
 - Monitor driver locations on a live map
 - View real-time driver status (online / offline / SOS)
 - Chat with drivers per trip
@@ -29,6 +31,7 @@ A role-based web application for managing container transport logistics. Built f
 - **Vue Router 4**
 - **Firebase** — Auth, Firestore, Realtime Database, Cloud Functions
 - **Leaflet** — interactive maps
+- **HERE Maps REST API** — address autocomplete, truck routing
 - **Tailwind CSS** — styling
 - **Vite** — build tool
 
@@ -64,7 +67,18 @@ VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 VITE_FIREBASE_DATABASE_URL=
+VITE_HERE_API_KEY=
 ```
+
+#### HERE Maps API key
+
+Required for address autocomplete and truck route calculation.
+
+1. Register at [developer.here.com](https://developer.here.com) (free tier available, no credit card required)
+2. Go to **Projects → your project → REST → Generate API Key**
+3. Paste the key as `VITE_HERE_API_KEY` in your `.env`
+
+Free tier limits: 1,000 autosuggest requests/month · 1,000 routing requests/month.
 
 ### 3. Deploy Firestore rules
 

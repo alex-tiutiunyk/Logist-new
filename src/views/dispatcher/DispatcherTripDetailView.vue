@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { useTripsStore } from '@/stores/trips.js'
@@ -12,6 +12,7 @@ import AppModal from '@/components/common/AppModal.vue'
 import AppSpinner from '@/components/common/AppSpinner.vue'
 import StatusTimeline from '@/components/status/StatusTimeline.vue'
 import ChatWindow from '@/components/chat/ChatWindow.vue'
+import RouteEditor from '@/components/map/RouteEditor.vue'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '@/firebase/firestore.js'
 
@@ -29,6 +30,7 @@ const activeTab = ref('info')
 const showEditModal = ref(false)
 const showDeleteConfirm = ref(false)
 const showEditConfirm = ref(false)
+const showRouteEditor = ref(false)
 const isEditing = ref(false)
 const isDeleting = ref(false)
 const drivers = ref([])
@@ -51,6 +53,45 @@ const isExpired = computed(() => {
   const eta = trip.value.eta.toDate ? trip.value.eta.toDate() : new Date(trip.value.eta)
   return eta < new Date()
 })
+
+const currentDriver = computed(() =>
+  trip.value?.driverUid ? drivers.value.find(d => d.id === trip.value.driverUid) || null : null
+)
+
+async function saveRoute(payload) {
+  if (!trip.value) return
+  const wp = trip.value.waypoints ? [...trip.value.waypoints] : []
+
+  if (wp[0]) {
+    wp[0] = {
+      ...wp[0],
+      name: payload.origin.name,
+      lat: payload.origin.lat ?? null,
+      lng: payload.origin.lng ?? null,
+    }
+  }
+  const lastIdx = wp.length - 1
+  if (lastIdx >= 0) {
+    wp[lastIdx] = {
+      ...wp[lastIdx],
+      name: payload.destination.name,
+      lat: payload.destination.lat ?? null,
+      lng: payload.destination.lng ?? null,
+    }
+  }
+
+  const result = await tripsStore.updateTrip(trip.value.id, {
+    routeData: payload.routeData,
+    waypoints: wp,
+  })
+
+  if (result.success) {
+    notifStore.success('Маршрут збережено')
+    showRouteEditor.value = false
+  } else {
+    notifStore.error('Помилка збереження маршруту')
+  }
+}
 
 onMounted(async () => {
   await tripsStore.fetchTrip(tripId.value)
@@ -183,6 +224,7 @@ function formatDate(ts) {
           <span v-if="trip.isInternational" class="text-xs text-purple-600 font-medium bg-purple-50 border border-purple-200 px-2 py-1 rounded-full">Міжнародний</span>
           <AppBadge :status="trip.currentStatus" />
           <AppButton variant="ghost" size="sm" :disabled="isExpired" :title="isExpired ? 'Рейс прострочено' : ''" @click="openEdit">Редагувати</AppButton>
+          <AppButton variant="secondary" size="sm" @click="showRouteEditor = true">Маршрут</AppButton>
           <AppButton variant="danger" size="sm" @click="showDeleteConfirm = true">Видалити</AppButton>
         </div>
       </div>
@@ -235,7 +277,14 @@ function formatDate(ts) {
         </div>
 
         <div class="bg-surface border border-border rounded-xl p-5">
-          <h3 class="text-sm font-semibold text-gray-900 mb-3">Маршрут</h3>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-900">Маршрут</h3>
+            <button
+              v-if="!isExpired"
+              class="text-xs text-primary hover:underline"
+              @click="showRouteEditor = true"
+            >Редагувати маршрут</button>
+          </div>
           <div class="flex flex-col gap-2">
             <div v-for="(wp, idx) in trip.waypoints" :key="wp.id || idx" class="flex items-center gap-2 text-sm">
               <div class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
@@ -243,6 +292,26 @@ function formatDate(ts) {
               >{{ idx + 1 }}</div>
               <span class="text-gray-800">{{ wp.name }}</span>
               <span class="text-xs text-muted">({{ wp.type }})</span>
+            </div>
+          </div>
+          <!-- Route stats -->
+          <div v-if="trip.routeData?.distanceM" class="mt-3 pt-3 border-t border-border flex gap-4 text-sm">
+            <div>
+              <span class="text-muted text-xs">Відстань</span>
+              <p class="font-semibold text-primary">{{ (trip.routeData.distanceM / 1000).toFixed(1) }} км</p>
+            </div>
+            <div>
+              <span class="text-muted text-xs">Час в дорозі</span>
+              <p class="font-semibold text-primary">
+                {{
+                  (() => {
+                    const totalMin = Math.round(trip.routeData.durationS / 60)
+                    const h = Math.floor(totalMin / 60)
+                    const m = totalMin % 60
+                    return `${h}:${String(m).padStart(2, '0')} год`
+                  })()
+                }}
+              </p>
             </div>
           </div>
         </div>
@@ -367,6 +436,16 @@ function formatDate(ts) {
           <AppButton variant="danger" :loading="isDeleting" @click="doDelete">Видалити</AppButton>
         </div>
       </template>
+    </AppModal>
+
+    <!-- Route editor modal -->
+    <AppModal v-model="showRouteEditor" title="Маршрут рейсу" persistent>
+      <RouteEditor
+        v-if="showRouteEditor"
+        :trip="trip"
+        :driver="currentDriver"
+        @save="saveRoute"
+      />
     </AppModal>
   </div>
 </template>

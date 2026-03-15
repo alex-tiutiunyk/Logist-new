@@ -10,6 +10,7 @@ import AppBadge from '@/components/common/AppBadge.vue'
 import AppButton from '@/components/common/AppButton.vue'
 import AppModal from '@/components/common/AppModal.vue'
 import AppSpinner from '@/components/common/AppSpinner.vue'
+import AddressInput from '@/components/map/AddressInput.vue'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '@/firebase/firestore.js'
 
@@ -31,8 +32,8 @@ const drivers = ref([])
 const newTrip = ref({
   number: '',
   driverUid: '',
-  origin: '',
-  destination: '',
+  origin: null,
+  destination: null,
   isInternational: false,
   eta: '',
 })
@@ -82,9 +83,10 @@ async function createTrip() {
     eta: newTrip.value.eta ? new Date(newTrip.value.eta) : null,
     dispatcherUid: authStore.user?.uid || '',
     waypoints: [
-      { id: '1', name: newTrip.value.origin, type: 'loading', completed: false, arrivedAt: null, departedAt: null },
-      { id: '2', name: newTrip.value.destination, type: 'unloading', completed: false, arrivedAt: null, departedAt: null },
+      { id: '1', name: newTrip.value.origin?.name || '', lat: newTrip.value.origin?.lat || null, lng: newTrip.value.origin?.lng || null, type: 'loading', completed: false, arrivedAt: null, departedAt: null },
+      { id: '2', name: newTrip.value.destination?.name || '', lat: newTrip.value.destination?.lat || null, lng: newTrip.value.destination?.lng || null, type: 'unloading', completed: false, arrivedAt: null, departedAt: null },
     ],
+    routeData: null,
     containers: [],
     availableStatuses: ['en_route_to_loading', 'arrived_at_loading', 'loading_started', 'loading_completed', 'departed', 'in_transit'],
   }
@@ -93,14 +95,14 @@ async function createTrip() {
     await eventsStore.addEvent({
       type: 'trip_created',
       title: `Рейс ${newTrip.value.number} створено`,
-      description: `${newTrip.value.origin || '?'} → ${newTrip.value.destination || '?'}`,
+      description: `${newTrip.value.origin?.name || '?'} → ${newTrip.value.destination?.name || '?'}`,
       tripId: result.id,
       tripNumber: newTrip.value.number,
       by: { uid: authStore.user?.uid, name: authStore.user?.displayName || 'Диспетчер' },
     })
     notifStore.success('Рейс створено')
     showCreateModal.value = false
-    newTrip.value = { number: '', driverUid: '', origin: '', destination: '', isInternational: false, eta: '' }
+    newTrip.value = { number: '', driverUid: '', origin: null, destination: null, isInternational: false, eta: '' }
     await tripsStore.fetchTrips()
   } else {
     notifStore.error('Помилка створення рейсу')
@@ -249,14 +251,8 @@ function formatDate(ts) {
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Звідки</label>
-            <input v-model="newTrip.origin" type="text" placeholder="Київ" class="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Куди</label>
-            <input v-model="newTrip.destination" type="text" placeholder="Одеса" class="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-          </div>
+          <AddressInput v-model="newTrip.origin" label="Звідки" placeholder="Київ" />
+          <AddressInput v-model="newTrip.destination" label="Куди" placeholder="Одеса" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">ETA</label>
