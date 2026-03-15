@@ -164,8 +164,11 @@ function drawRoute(polylinePoints) {
 
   if (!polylinePoints || !polylinePoints.length) return
 
+  // Normalize: accept both [lat,lng] arrays and {lat,lng} objects
+  const latLngs = polylinePoints.map(p => Array.isArray(p) ? p : [p.lat, p.lng])
+
   // Draw polyline
-  routeLayer = L.polyline(polylinePoints, {
+  routeLayer = L.polyline(latLngs, {
     color: '#0f4c35',
     weight: 4,
     opacity: 0.85,
@@ -178,8 +181,8 @@ function drawRoute(polylinePoints) {
     iconSize: [14, 14],
     iconAnchor: [7, 7],
   })
-  const first = polylinePoints[0]
-  originMarker = L.marker([first[0], first[1]], { icon: greenIcon })
+  const first = latLngs[0]
+  originMarker = L.marker(first, { icon: greenIcon })
     .addTo(map)
     .bindPopup(origin.value?.name || 'Звідки')
 
@@ -190,8 +193,8 @@ function drawRoute(polylinePoints) {
     iconSize: [14, 14],
     iconAnchor: [7, 7],
   })
-  const last = polylinePoints[polylinePoints.length - 1]
-  destinationMarker = L.marker([last[0], last[1]], { icon: redIcon })
+  const last = latLngs[latLngs.length - 1]
+  destinationMarker = L.marker(last, { icon: redIcon })
     .addTo(map)
     .bindPopup(destination.value?.name || 'Куди')
 
@@ -270,7 +273,7 @@ function save() {
     destination: destination.value,
     routeData: routeResult.value
       ? {
-          polylinePoints: routeResult.value.polyline,
+          polylinePoints: routeResult.value.polyline.map(([lat, lng]) => ({ lat, lng })),
           distanceM: routeResult.value.distanceM,
           durationS: routeResult.value.durationS,
           vehicleParams: {
